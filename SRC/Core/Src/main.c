@@ -133,7 +133,7 @@ void uart_communication_fsm(){
 			HAL_ADC_Stop(&hadc1);
 			HAL_UART_Transmit(&huart2, (void*)str, sprintf(str,"!ADC=%ld#\r\n",ADC_value), 100);
 			setTimer1(100);
-			token_state = ADC;
+			token_state = ADC_STATE;
 			break;
 		case ADC_STATE:
 			if (timer1_flag == 1) token_state = RST;
@@ -179,8 +179,10 @@ int main(void)
   MX_GPIO_Init();
   MX_ADC1_Init();
   MX_USART2_UART_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
   HAL_UART_Receive_IT(&huart2, &temp, 1);
+  HAL_TIM_Base_Start_IT(&htim2);
   /* USER CODE END 2 */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
