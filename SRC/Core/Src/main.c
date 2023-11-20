@@ -121,7 +121,6 @@ void command_parser_fsm(){
 			if (buffer[i] == '#'){
 				command_flag = 1;
 				command_state = INIT_STATE;
-				HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
 			}
 			else if (buffer[i] == '!'){
 				index_data = 0;
@@ -140,6 +139,7 @@ void uart_communication_fsm(){
 			if (command_flag == 1){
 				command_flag = 0;
 				if (strcmp(data, "RST") == 0){
+					HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
 					uc_state = OK;
 //					HAL_ADC_Start(&hadc1);
 //					ADC_value = HAL_ADC_GetValue(&hadc1);
@@ -163,11 +163,13 @@ void uart_communication_fsm(){
 			if (timer_flag[0] == 1){
 				setTimer(0,300);
 				HAL_UART_Transmit(&huart2, (void*)str, sprintf(str,"!ADC=%ld#\r\n",ADC_value), 1000);
-				HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
 			}
 			if (command_flag == 1){
 				command_flag = 0;
-				if (strcmp(data, "OK") == 0) uc_state = RST;
+				if (strcmp(data, "OK") == 0){
+					uc_state = RST;
+					HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
+				}
 				memset(data, '\0', sizeof(data));
 				index_data = 0;
 			}
